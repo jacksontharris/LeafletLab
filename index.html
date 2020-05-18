@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+</head>
+<body>
+    <!-- Our web map and content will go here -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <div id="map" style="width: 705px; height: 375px"></div>
+    <script defer>
+        // Create variable to hold map element, give initial settings to map
+        var map = L.map('map',{ center: [43.703239, -72.288537], zoom: 14});
+        // Add OpenStreetMap tile layer to map element
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(map);
+        var myDataPoint = L.marker([43.705248, -72.288728]).addTo(map);
+        myDataPoint.bindPopup("<h3>Dartmouth Library</h3><p>Hanover, NH<br>Information about Dartmouth Library.</p>");
+        // Create area feature for the green, style and add to map
+        var myArea = L.polygon([[43.702611, -72.287749], [43.704131, -72.287888],
+        [43.704131, -72.289389], [43.702458, -72.289307]],
+        {color: 'lightgreen', weight: 4}).addTo(map);
+        myArea.bindPopup("The Green");
+
+        // Create an Empty Popup
+        var popup = L.popup();
+        // Write function to set Properties of the Popup
+        function onMapClick(e) {
+        popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+        }
+        // Listen for a click event on the Map element
+        map.on('click', onMapClick);
+
+        $.getJSON("uvtransit.geojson",function(data){
+        // add GeoJSON layer to the map once the file is loaded
+        L.geoJson(data,{
+        onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.description);
+        }
+        }).addTo(map);
+        });
+    </script>
+</body>
+</html>
